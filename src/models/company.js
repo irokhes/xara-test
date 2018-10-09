@@ -1,10 +1,10 @@
 'use strict';
-
+var constants = require('../utils/constants');
 var mongoose = require('mongoose');
 var _ = require('lodash');
 var UserSchema = new mongoose.Schema({
-    email: { type: String, required: true },
-    role: { type: String, enum: ['basic', 'admin'] },
+    email: { type: String, required: true, index: true },
+    role: { type: String, enum: [constants.role.basic, constants.role.admin] },
 });
 var WorkspaceSchema = new mongoose.Schema({
     displayName: { type: String, required: true },
@@ -24,11 +24,11 @@ UserSchema.path('email').validate(function (email) {
 }, 'Wrong email format.')
 
 function hasDuplicates(a) {
-    return _.uniqBy(a,'name').length !== a.length; 
-  }
-  
+    return _.uniqBy(a, 'name').length !== a.length;
+}
+
 WorkspaceSchema.pre('save', function (next) {
-    this.name = this.displayName.toLowerCase();;
+    this.name = this.displayName.toLowerCase();
     next();
 });
 
@@ -37,10 +37,10 @@ CompanySchema.pre('save', function (next) {
     hasDuplicates(this.workspaces) ? next(new Error('errorr!!!')) : next();
 });
 CompanySchema.pre('update', function (next) {
-    if(this._update.displayName) this._update.name = this._update.displayName.toLowerCase();
+    if (this._update.displayName) this._update.name = this._update.displayName.toLowerCase();
     next();
 });
 
-CompanySchema.index({ 'name': 1, }, {   unique: true });
+CompanySchema.index({ 'name': 1, }, { unique: true });
 
 module.exports = mongoose.model('Company', CompanySchema);
