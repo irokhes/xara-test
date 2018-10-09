@@ -1,10 +1,11 @@
 
+var config = require('../utils/config');
 // Bring Mongoose into the app 
 var mongoose = require('mongoose');
 mongoose.set('useCreateIndex', true);
 
 // Build the connection string 
-var dbURI = 'mongodb://localhost:27017/xara';
+var dbURI = config.mongo.uri;
 
 // Create the database connection 
 mongoose.connect(dbURI, { useNewUrlParser: true });

@@ -5,7 +5,7 @@ var _ = require('lodash');
 var UserSchema = new mongoose.Schema({
     email: { type: String, required: true, index: true },
     role: { type: String, enum: [constants.role.basic, constants.role.admin] },
-});
+}, { _id: false });
 var WorkspaceSchema = new mongoose.Schema({
     displayName: { type: String, required: true },
     name: { type: String },

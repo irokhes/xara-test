@@ -11,10 +11,6 @@
         "plugin:es5/no-es2015"
       ],
     "rules": {
-        "prefer-arrow-callback": 0,
-        "func-names": 0,
-        "no-var": 0,
-        "no-underscore-dangle": 0,
-        "vars-on-top": 0
+        "indent": ["error", 2]        
     }
 }

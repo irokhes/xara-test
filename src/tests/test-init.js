@@ -1,5 +1,7 @@
 'use strict';
 
+require('should');
+
 var Company = require('../models/company');
 before(function (done) {
   require('../app');
