@@ -22,17 +22,17 @@ app.route('/companies').post(function (req, res) {
       res.status(400);
       res.send(err);
     } else {
-      res.status(200).send(companySaved);
+      res.status(201).send(companySaved);
     }
   });
 });
 app.route('/companies/:id').put(function (req, res) {
-  Company.update({ _id: req.params.id }, req.body, function (err, result) {
+  Company.updateOne({ _id: req.params.id }, req.body, function (err, result) {
     if (err) {
       res.status(400);
       res.send(err);
     } else {
-      res.status(200).send('updated');
+      res.status(204).send();
     }
   });
 });
@@ -44,12 +44,12 @@ app.route('/companies/:id/workspaces').post(function (req, res) {
     }
 
     company.workspaces.push(req.body);
-    company.save(function (error, updatedCompany) {
+    company.save(function (error, createdWorkspace) {
       if (error) {
         res.status(400);
         res.send(err);
       } else {
-        res.status(200).send(updatedCompany.workspaces);
+        res.status(201).send(createdWorkspace.workspaces);
       }
     });
   });
@@ -60,12 +60,12 @@ app.route('/companies/:id/workspaces/:wsid').put(function (req, res) {
     if (elem) {
       elem.displayName = req.body.displayName;
     }
-    company.save(function (error, updatedCompany) {
+    company.save(function (error) {
       if (error) {
         res.status(400);
         res.send(err);
       } else {
-        res.status(200).send(updatedCompany);
+        res.status(204).send();
       }
     });
   });
@@ -89,7 +89,7 @@ app.route('/companies/:id/workspaces/:wsid/users').post(function (req, res) {
   });
 });
 app.route('/companies/:id/workspaces/:wsid/users/:userid').put(function (req, res) {
-  Company.update({ _id: req.params.id, 'workspaces._id': req.params.wsid, 'workspaces.users._id': req.params.userid }, { $set: { 'workspaces.0.users.0.email': req.body.email, 'workspaces.0.users.0.role': req.body.rolel } }, function (err, result) {
+  Company.updateOne({ _id: req.params.id, 'workspaces._id': req.params.wsid, 'workspaces.users._id': req.params.userid }, { $set: { 'workspaces.0.users.0.email': req.body.email, 'workspaces.0.users.0.role': req.body.rolel } }, function (err, result) {
     if (err) {
       res.status(400);
       res.send(err);
