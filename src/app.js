@@ -15,5 +15,5 @@ require('./models/db');
 require('./routes')(app);
 
 http.listen(config.settings.port, function () {
-  console.log('Express server listening on port' + config.settings.port);
+  console.log('Express server listening on port ' + config.settings.port);
 });

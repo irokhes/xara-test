@@ -79,13 +79,30 @@ describe('Users Test', function () {
         done();
       });
     });
-    describe('When I try to update the information', function () {
+    describe('When I try to delete the information', function () {
       it('Then I should be able to do it', function (done) {
-        var newName = "newWorkspaceName";
-        request(baseurl).put('/companies/' + company._id + '/workspaces/' + company.workspaces[0]._id + '/users/' + company.workspaces[0].users[0].email)
-          .send({ displayName: newName })
+        request(baseurl).delete('/companies/' + company._id + '/workspaces/' + company.workspaces[0]._id + '/users/' + company.workspaces[0].users[0].email)
           .end(function (err, res) {
             res.status.should.equal(204);
+            done();
+          });
+      });
+    });
+  });
+  describe('Given an existing user associated to the workspace', function () {
+    var company;
+    before(function (done) {
+      new CompanyBuilder().withWorkspace().withUser().build(function (err, comp) {
+        company = comp;
+        done();
+      });
+    });
+    describe('When I try to add another one with the same email address', function () {
+      it('Then I should get an error', function (done) {
+        request(baseurl).post('/companies/' + company._id + '/workspaces/' + company.workspaces[0]._id + '/users')
+          .send({ email: company.workspaces[0].users[0].email, role: constants.role.basic })
+          .end(function (err, res) {
+            res.status.should.equal(400);
             done();
           });
       });
