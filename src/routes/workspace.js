@@ -6,7 +6,7 @@ var PATH = '/companies/:id/workspaces';
 
 module.exports = function (app) {
   app.route(PATH).post(createWorkspace);
-  app.route(PATH + '/:wsid').put(updateWorkspace);
+  app.route(PATH + '/:wsid').patch(updateWorkspace);
 
   function createWorkspace(req, res) {
     Company.findById(req.params.id, function (err, company) {

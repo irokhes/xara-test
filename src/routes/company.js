@@ -5,7 +5,7 @@ var PATH = '/companies';
 
 module.exports = function (app) {
   app.route(PATH).post(createCompany);
-  app.route(PATH + '/:id').put(updateCompany);
+  app.route(PATH + '/:id').patch(updateCompany);
 
   function createCompany(req, res) {
     var company = new Company(req.body);

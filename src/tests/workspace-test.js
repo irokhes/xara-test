@@ -55,7 +55,7 @@ describe('Workspace Test', function () {
     describe('When I try to update the information', function () {
       it('Then I should be able to do it', function (done) {
         var newName = "newWorkspaceName";
-        request(baseurl).put('/companies/' + company._id + '/workspaces/' + company.workspaces[0]._id)
+        request(baseurl).patch('/companies/' + company._id + '/workspaces/' + company.workspaces[0]._id)
           .send({ displayName: newName })
           .end(function (err, res) {
             res.status.should.equal(204);
