@@ -6,39 +6,38 @@ var PATH = '/companies/:id/workspaces/:wsid/users';
 
 module.exports = function (app) {
   app.route(PATH).post(createUser);
-  app.route(PATH + '/:userid').put(updateUser);
+  app.route(PATH + '/:email').delete(deleteUser);
 
   function createUser(req,res){
     Company.findById(req.params.id, function (err, company) {
       if (err) {
         res.status(400);
-        res.send(err);
+        return res.send(err);
       }
       var workspace = _.find(company.workspaces, function (ws) { return ws._id.toString() === req.params.wsid; });
-      workspace.users.push(req.body);
+      workspace.addUser(req.body);
       company.save(function (error) {
         if (error) {
           res.status(400);
-          res.send(err);
-        } else {
-          res.status(201).send(workspace.users);
-        }
+          return res.send(error);
+        } 
+        res.status(201).send(workspace.users);
       });
     });
   }
-  function updateUser(req,res){
+  function deleteUser(req,res){
     Company.findById(req.params.id, function (err, company) {
-      var elem = _.find(company.workspaces, function (ws) { return ws._id.toString() === req.params.wsid; });
-      if (elem) {
-        elem.displayName = req.body.displayName;
+      var workspace = _.find(company.workspaces, function (ws) { return ws._id.toString() === req.params.wsid; });
+      if (!workspace) {
+        return res.status(400).json('Invalid company ID')
       }
+      workspace.removeUser(req.params.email);
       company.save(function (error) {
         if (error) {
           res.status(400);
-          res.send(err);
-        } else {
-          res.status(204).send();
-        }
+          return res.send(err);
+        } 
+        res.status(204).send();
       });
     });
   }

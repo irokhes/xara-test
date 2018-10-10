@@ -1,45 +1,36 @@
 'use strict';
-var constants = require('../utils/constants');
 var mongoose = require('mongoose');
 var _ = require('lodash');
-var UserSchema = new mongoose.Schema({
-    email: { type: String, required: true, index: true },
-    role: { type: String, enum: [constants.role.basic, constants.role.admin] },
-}, { _id: false });
-var WorkspaceSchema = new mongoose.Schema({
-    displayName: { type: String, required: true },
-    name: { type: String },
-    users: [UserSchema]
-});
+
+var WorkspaceSchema = require('./workspace');
 
 var CompanySchema = new mongoose.Schema({
-    displayName: { type: String, required: true },
-    name: { type: String },
-    workspaces: [WorkspaceSchema]
+  displayName: { type: String, required: true },
+  name: { type: String },
+  workspaces: [WorkspaceSchema]
 });
 
-UserSchema.path('email').validate(function (email) {
-    var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-    return emailRegex.test(email); // Assuming email has a text attribute
-}, 'Wrong email format.')
-
-function hasDuplicates(a) {
-    return _.uniqBy(a, 'name').length !== a.length;
+function hasDuplicates(a, property) {
+  return _.uniqBy(a, property).length !== a.length;
 }
 
-WorkspaceSchema.pre('save', function (next) {
-    this.name = this.displayName.toLowerCase();
-    next();
+CompanySchema.pre('save', function (next) {
+  this.name = this.displayName && this.displayName.toLowerCase();
+  hasDuplicates(this.workspaces, 'name') ? next(new Error('Duplicate workspace')) : next();
 });
 
-CompanySchema.pre('save', function (next) {
-    this.name = this.displayName && this.displayName.toLowerCase();
-    hasDuplicates(this.workspaces) ? next(new Error('errorr!!!')) : next();
-});
 CompanySchema.pre('update', function (next) {
-    if (this._update.displayName) this._update.name = this._update.displayName.toLowerCase();
-    next();
+  if (this._update.displayName) this._update.name = this._update.displayName.toLowerCase();
+  next();
 });
+
+CompanySchema.methods.addWorkspace = function(workspace){
+  this.workspaces.push(workspace);
+}
+CompanySchema.methods.updateWorkspace = function(wsid, newWorkspaceInfo){
+  var elem = _.find(this.workspaces, function (ws) { return ws._id.toString() === wsid; });
+  if (elem) elem.displayName = newWorkspaceInfo.displayName;
+}
 
 CompanySchema.index({ 'name': 1, }, { unique: true });
 

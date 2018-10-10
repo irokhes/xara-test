@@ -12,20 +12,18 @@ module.exports = function (app) {
     company.save(function (err, companySaved) {
       if (err) {
         res.status(400);
-        res.send(err);
-      } else {
-        res.status(201).send(companySaved);
-      }
+        return res.send(err);
+      } 
+      res.status(201).send(companySaved);
     });
   }
   function updateCompany(req, res){
     Company.updateOne({ _id: req.params.id }, req.body, function (err) {
       if (err) {
         res.status(400);
-        res.send(err);
-      } else {
-        res.status(204).send();
-      }
+        return res.send(err);
+      } 
+      res.status(204).send();
     });
   }
 };

@@ -12,33 +12,28 @@ module.exports = function (app) {
     Company.findById(req.params.id, function (err, company) {
       if (err) {
         res.status(400);
-        res.send(err);
+        return res.send(err);
       }
 
-      company.workspaces.push(req.body);
+      company.addWorkspace(req.body);
       company.save(function (error, createdWorkspace) {
         if (error) {
           res.status(400);
-          res.send(err);
-        } else {
-          res.status(201).send(createdWorkspace.workspaces);
+          return res.send(err);
         }
+        res.status(201).send(createdWorkspace.workspaces);
       });
     });
   }
   function updateWorkspace(req, res) {
     Company.findById(req.params.id, function (err, company) {
-      var elem = _.find(company.workspaces, function (ws) { return ws._id.toString() === req.params.wsid; });
-      if (elem) {
-        elem.displayName = req.body.displayName;
-      }
+      company.updateWorkspace(req.params.wsid, req.body)
       company.save(function (error) {
         if (error) {
           res.status(400);
-          res.send(err);
-        } else {
-          res.status(204).send();
+          return res.send(err);
         }
+        res.status(204).send();
       });
     });
   }
